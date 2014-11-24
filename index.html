@@ -48,7 +48,7 @@
 			// setup x 
 			var xValue = function(d) { return d.Points;}, // data -> value
 			    xScale = d3.scale.linear().range([0, width]), // value -> display
-			    xMap = function(d) { return xScale(xValue(d));}, // data -> display
+			    xMap = function(d) { return xScale(xValue(d))*10;}, // data -> display
 			    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
 			// setup y
@@ -58,7 +58,12 @@
 			    yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 			var rValue = function(d) { return d["Gross Spending"];},
-				rMap = function(d) { return rValue(d)/100;};
+				rMap = function(d) 
+				{ if(rValue(d) == 0)
+						return 1;
+				  else 
+					return rValue(d)/5000000;
+				};
 
 			// setup fill color
 			var cValue = function(d) { return d["Table Standing"];},
