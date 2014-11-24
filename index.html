@@ -6,6 +6,7 @@
 		<title>English Premier League</title>
 		<!--<link rel="stylesheet" type="text/css" href="css/style.css">-->
 		<script src= 'javascript/script.js' type='text/javascript'></script>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	</head>
 	<style>
 		body {
@@ -48,7 +49,7 @@
 			// setup x 
 			var xValue = function(d) { return d.Points;}, // data -> value
 			    xScale = d3.scale.linear().range([0, width]), // value -> display
-			    xMap = function(d) { return xScale(xValue(d))*10;}, // data -> display
+			    xMap = function(d) { return xScale(xValue(d));}, // data -> display
 			    xAxis = d3.svg.axis().scale(xScale).orient("bottom");
 
 			// setup y
@@ -98,7 +99,7 @@
 			  });
 
 			  // don't want dots overlapping axis, so add in buffer to data domain
-			  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+			  xScale.domain([d3.min(data, xValue ), d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
 			  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
 
 			  // x-axis
