@@ -7,6 +7,9 @@
 		<!--<link rel="stylesheet" type="text/css" href="css/style.css">-->
 		<script src= 'javascript/script.js' type='text/javascript'></script>
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="d3.slider.js"></script>
+  		<link rel="stylesheet" href="d3.slider.css" /> 
+  		 
 	</head>
 	<style>
 		body {
@@ -46,6 +49,15 @@
 			 * axis - sets up axis
 			 */ 
 
+			 // var slider = d3.slider()
+		  //   .axis(true)
+		  //   .min(0)
+		  //   .max(1)
+		  //   .step(0.01)
+		  //   .on('slide', function(e,v) {
+		  //       force.start();
+		  //   });
+
 			// setup x 
 			var xValue = function(d) { return d.Points;}, // data -> value
 			    xScale = d3.scale.linear().range([0, width]), // value -> display
@@ -72,7 +84,7 @@
 			    color = d3.scale.ordinal()
 			    		/*.range(["#00FF00", "#00FF00","#00FF00","#00FF00","#d3d3d3", "#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#FF0000","#FF0000","#FF0000"])
 			    		.domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);*/
-			    		.range(["#00FF00","#d3d3d3","#FF0000"])
+			    		.range(["#2ecc71","#3498db","#c0392b"])
 			    		.domain(["Champion's League", "Hold League", "Relegation"]);
 
 			// add the graph canvas to the body of the webpage
@@ -85,7 +97,7 @@
 			// add the tooltip area to the webpage
 			var tooltip = d3.select("body").append("div")
 			    .attr("class", "tooltip")
-			    .style("opacity", 0);
+			    .style("opacity", 20);
 
 			// load data
 			d3.csv("Stats.csv.csv", function(error, data) {
@@ -99,8 +111,8 @@
 			  });
 
 			  // don't want dots overlapping axis, so add in buffer to data domain
-			  xScale.domain([d3.min(data, xValue ), d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
-			  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+			  xScale.domain([0, d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
+			  yScale.domain([d3.min(data, yValue), 170000000]);
 
 			  // x-axis
 			  svg.append("g")
@@ -139,10 +151,9 @@
 			          tooltip.transition()
 			               .duration(200)
 			               .style("opacity", .9);
-			          tooltip.html(d["TEAM"] + "<br/> (" + xValue(d) 
-				        + ", $" + yValue(d) + ")")
-			               .style("left", (d3.event.pageX + 5) + "px")
-			               .style("top", (d3.event.pageY - 28) + "px");
+			          tooltip.html(d["TEAM"] + "<br/> "+ d["Season"]+" <br/> (" + xValue(d) + ", £" + yValue(d) + ")")
+			               .style("left", (d3.event.pageX + 20) + "px")
+			               .style("top", (d3.event.pageY - 40) + "px");
 			      })
 			      .on("mouseout", function(d) {
 			          tooltip.transition()
