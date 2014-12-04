@@ -18,8 +18,9 @@
 		}
 		
 		body {
-		  font: 11px sans-serif;
 		  text-align: center;
+		  font-family: sans-serif; 
+		  font-weight: bold;
 		}
 
 		.axis path,
@@ -41,29 +42,35 @@
 		  width: 200px;
 		  height: 28px;
 		  pointer-events: none;
-		  font-size:2em;
+		  font-size:1em;
 		  color:#FF6633;
 		}
+		
+		
 		</style>
 	<body>
-		<h2 style=" font-size: 8em;">What does it take </br>to win the EPL?</h2>
+		<h2 style=" font-size: 6em;">What does it take </br>to win the EPL?</h2>
 		
-		<p style=" font-size: 2em; color: #484848 ;">Does spending more money mean a club wins more Championships? 
+		<p style=" font-size: 20px; color: #484848 ;">Does spending more money mean a club wins more Championships? 
 		</br>How many points does a club need on average to make it into the Champions League? 
 		</br>How much money does it take to stay a top-flight club?</p>
 		
+		
 		<script src="/d3/d3.js"></script>
 		<script>
-			var margin = {top: 50, right: 20, bottom: 30, left: 80},
-    			width = 960 - margin.left - margin.right,
-    			height = 500 - margin.top - margin.bottom;
-
+			
+			var margin = {top: 50, right: 200, bottom: 30, left: 100},
+    			width = 1300- margin.left - margin.right,
+    			height = 520 - margin.top - margin.bottom;
+			
 			/* 
 			 * value accessor - returns the value to encode for a given data object.
 			 * scale - maps value to a visual display encoding, such as a pixel position.
 			 * map function - maps from data value to display value
 			 * axis - sets up axis
 			 */ 
+			 
+			 
 
 			// setup x 
 			var xValue = function(d) { return d.Points;}, // data -> value
@@ -169,7 +176,7 @@
 			               .style("opacity", 0);
 			      });
 
-			  // draw legend
+			    // draw legend
 			  var legend = svg.selectAll(".legend")
 			      .data(color.domain())
 			    .enter().append("g")
@@ -178,19 +185,30 @@
 
 			  // draw legend colored rectangles
 			  legend.append("rect")
-			      .attr("x", width - 18)
+			      .attr("x", width + 170)
 			      .attr("width", 18)
 			      .attr("height", 18)
+				  .on("mouseover", function(d) {
+			          tooltip.transition()
+			               .duration(200)
+			               .style("opacity", .9);
+			          tooltip.html(d["TEAM"] + "<br/> (" + xValue(d) 
+				        + ", $" + yValue(d) + ")")
+			               .style("left", (d3.event.pageX + 5) + "px")
+			               .style("top", (d3.event.pageY - 28) + "px");
+			      })
 			      .style("fill", color);
-
+					
 			  // draw legend text
 			  legend.append("text")
-			      .attr("x", width - 24)
+			      .attr("x", width + 160)
 			      .attr("y", 9)
 			      .attr("dy", ".35em")
 			      .style("text-anchor", "end")
 			      .text(function(d) { return d;})
-			});			
+				  
+			});	
+						
 		</script>
 	</body>
 </html>
