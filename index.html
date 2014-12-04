@@ -59,6 +59,10 @@
 		<script src="/d3/d3.js"></script>
 		<script>
 			
+			var clSelected = true;
+			var holdSelected = true;
+			var relegatedSelected = true;
+			
 			var margin = {top: 50, right: 200, bottom: 30, left: 100},
     			width = 1300- margin.left - margin.right,
     			height = 520 - margin.top - margin.bottom;
@@ -93,14 +97,19 @@
 				};
 
 			// setup fill color
-			var cValue = function(d) { return d["Table Standing"];},
+			var cValue = function(d) { 
+				return d["Table Standing"];},
+				
 			    //color = d3.scale.category20();
 			    color = d3.scale.ordinal()
 			    		/*.range(["#00FF00", "#00FF00","#00FF00","#00FF00","#d3d3d3", "#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#FF0000","#FF0000","#FF0000"])
 			    		.domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);*/
 			    		.range(["#101010","#484848  ","#B0B0B0 "])
 			    		.domain(["Champion's League", "Hold League", "Relegation"]);
-
+			
+		
+			//console.log(cValue);
+			
 			// add the graph canvas to the body of the webpage
 			var svg = d3.select("body").append("svg")
 			    .attr("width", width + margin.left + margin.right)
@@ -115,7 +124,7 @@
 
 			// load data
 			d3.csv("Stats.csv.csv", function(error, data) {
-
+			//console.log(data);
 			  // change string (from CSV) into number format
 			  data.forEach(function(d) {
 			    d.Calories = +d.Calories;
@@ -127,7 +136,8 @@
 			  // don't want dots overlapping axis, so add in buffer to data domain
 			  xScale.domain([d3.min(data, xValue ), d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
 			  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
-
+			  
+			
 			  // x-axis
 			  svg.append("g")
 			      .attr("class", "x axis")
@@ -160,23 +170,41 @@
 			      .attr("r", rMap)
 			      .attr("cx", xMap)
 			      .attr("cy", yMap)
-			      .style("fill", function(d) { return color(cValue(d));}) 
+			      .style("fill", function(d) {  
+					
+					
+					if(clSelected == true && color(cValue(d)) == "#101010"){
+						return color(cValue(d));
+					}
+					if(holdSelected == true && color(cValue(d)) == "#484848  "){
+						return color(cValue(d));
+					}
+					if(relegatedSelected == true && color(cValue(d)) == "#B0B0B0 "){
+						return color(cValue(d));
+					}
+					
+					
+				  
+				  }) 
 			      .on("mouseover", function(d) {
+					 d3.select(this).style("opacity", 0.5);
 			          tooltip.transition()
 			               .duration(200)
-			               .style("opacity", .9);
+			               .style("opacity", 0.9);
 			          tooltip.html(d["TEAM"] + "<br/> (" + xValue(d) 
 				        + ", $" + yValue(d) + ")")
 			               .style("left", (d3.event.pageX + 5) + "px")
 			               .style("top", (d3.event.pageY - 28) + "px");
 			      })
 			      .on("mouseout", function(d) {
+					  d3.select(this).style("opacity", 1);	
 			          tooltip.transition()
 			               .duration(500)
 			               .style("opacity", 0);
 			      });
+				  
 
-			    // draw legend
+			  	   // draw legend
 			  var legend = svg.selectAll(".legend")
 			      .data(color.domain())
 			    .enter().append("g")
@@ -189,13 +217,21 @@
 			      .attr("width", 18)
 			      .attr("height", 18)
 				  .on("mouseover", function(d) {
-			          tooltip.transition()
-			               .duration(200)
-			               .style("opacity", .9);
-			          tooltip.html(d["TEAM"] + "<br/> (" + xValue(d) 
-				        + ", $" + yValue(d) + ")")
-			               .style("left", (d3.event.pageX + 5) + "px")
-			               .style("top", (d3.event.pageY - 28) + "px");
+						console.log(d);
+						if(d == "Champion's League"){
+							clSelected = true;
+						} 
+						if(d == "Hold League"){
+							holdSelected = true;
+						}
+						if(d == "Relegation"){
+							relegatedSelected = true;
+						}
+			      })
+				  .on("mouseout", function(d) {
+					  clSelected = false;
+					  holdSelected = false;
+					  relegatedSelected = false;
 			      })
 			      .style("fill", color);
 					
@@ -208,6 +244,8 @@
 			      .text(function(d) { return d;})
 				  
 			});	
+
+			
 						
 		</script>
 	</body>
