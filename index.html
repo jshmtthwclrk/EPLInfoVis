@@ -63,9 +63,9 @@
 			var holdSelected = true;
 			var relegatedSelected = true;
 			
-			var margin = {top: 50, right: 200, bottom: 30, left: 100},
+			var margin = {top: 150, right: 200, bottom: 30, left: 100},
     			width = 1300- margin.left - margin.right,
-    			height = 520 - margin.top - margin.bottom;
+    			height = 600 - margin.top - margin.bottom;
 			
 			/* 
 			 * value accessor - returns the value to encode for a given data object.
@@ -93,7 +93,7 @@
 				{ if(rValue(d) == 0)
 						return 1;
 				  else 
-					return rValue(d)/5000000;
+					return rValue(d)/2000000;
 				};
 
 			// setup fill color
