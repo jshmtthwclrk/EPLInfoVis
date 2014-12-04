@@ -26,7 +26,7 @@
 		.axis path,
 		.axis line {
 		  fill: none;
-		  stroke: #000;
+		  stroke: #484848  ;
 		  shape-rendering: crispEdges;
 		  
 		}
@@ -43,7 +43,7 @@
 		  height: 28px;
 		  pointer-events: none;
 		  font-size:1em;
-		  color:#FF6633;
+		  color:#484848;
 		}
 		
 		
@@ -64,7 +64,7 @@
 			var relegatedSelected = true;
 			
 			var margin = {top: 150, right: 200, bottom: 30, left: 100},
-    			width = 1300- margin.left - margin.right,
+    			width = 1300 - margin.left - margin.right,
     			height = 720 - margin.top - margin.bottom;
 			
 			/* 
@@ -104,7 +104,7 @@
 			    color = d3.scale.ordinal()
 			    		/*.range(["#00FF00", "#00FF00","#00FF00","#00FF00","#d3d3d3", "#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#FF0000","#FF0000","#FF0000"])
 			    		.domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);*/
-			    		.range(["#101010","#484848  ","#B0B0B0 "])
+			    		.range(["#FFFF66","#CCFFFF  ","#FF9933"])
 			    		.domain(["Champion's League", "Hold League", "Relegation"]);
 			
 		
@@ -141,6 +141,7 @@
 			  // x-axis
 			  svg.append("g")
 			      .attr("class", "x axis")
+				  .style("fill", "#484848 "  )
 			      .attr("transform", "translate(0," + height + ")")
 			      .call(xAxis)
 			    .append("text")
@@ -153,6 +154,7 @@
 			  // y-axis
 			  svg.append("g")
 			      .attr("class", "y axis")
+				  .style("fill", "#484848 "  )
 			      .call(yAxis)
 			    .append("text")
 			      .attr("class", "label")
@@ -170,24 +172,10 @@
 			      .attr("r", rMap)
 			      .attr("cx", xMap)
 			      .attr("cy", yMap)
-			      .style("fill", function(d) {  
-					
-					
-					if(clSelected == true && color(cValue(d)) == "#101010"){
-						return color(cValue(d));
-					}
-					if(holdSelected == true && color(cValue(d)) == "#484848  "){
-						return color(cValue(d));
-					}
-					if(relegatedSelected == true && color(cValue(d)) == "#B0B0B0 "){
-						return color(cValue(d));
-					}
-					
-					
-				  
+			      .style("fill", function(d) {  return color(cValue(d));
 				  }) 
 			      .on("mouseover", function(d) {
-					 d3.select(this).style("opacity", 0.5);
+					 d3.select(this).style("opacity", 0.6);
 			          tooltip.transition()
 			               .duration(200)
 			               .style("opacity", 0.9);
@@ -241,6 +229,7 @@
 			      .attr("y", 9)
 			      .attr("dy", ".35em")
 			      .style("text-anchor", "end")
+				  .style("fill", "#484848 "  )
 			      .text(function(d) { return d;})
 				  
 			});	
