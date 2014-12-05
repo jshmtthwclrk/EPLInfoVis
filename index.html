@@ -9,56 +9,8 @@
 		<script src="d3/d3.js"></script>
 		<!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>-->
 	</head>
-<<<<<<< HEAD
-	<style>
-/*		html { 
-		  background: url(football.png) no-repeat center center fixed; 
-		  -webkit-background-size: cover;
-		  -moz-background-size: cover;
-		  -o-background-size: cover;
-		  background-size: cover;
-		}*/
-		
-		body {
-		  text-align: center;
-		  font-family: sans-serif; 
-		  font-weight: bold;
-		}
 
-		.axis path,
-		.axis line {
-		  fill: none;
-		  stroke: #484848  ;
-		  shape-rendering: crispEdges;
-		  
-		}
-		
-		
-		.dot {
-		  stroke: #fff;
-		}
-		
-
-		.tooltip {
-		  position: absolute;
-		  width: 200px;
-		  height: 28px;
-		  pointer-events: none;
-		  font-size:1em;
-		  color:#484848;
-		}
-
-		.brush .extent {
-		  stroke: none;
-		  fill-opacity: .2;
-		  shape-rendering: crispEdges; 
-		}
-		
-		
-		</style>
-=======
 	
->>>>>>> origin/master
 	<body>
 		<h2 class="titleText">What does it take to win the EPL?</h2>
 		<script>
@@ -78,14 +30,15 @@
 				width: width
 			};
 
-
 			// add the graph canvas to the body of the webpage
 			var svg = d3.select("body").append("svg")
 			    .attr("width", width + margin.left + margin.right)
 			    .attr("height", height + margin.top + margin.bottom)
-			    .attr("margin","auto")
 			  .append("g")
-			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			    //.call(d3.behavior.zoom()/*.x(xScale).y(yScale)*/.scaleExtent([1, 6]).on("zoom", zoom/*ed*/))
+			  //.append("g")
+			    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");    
 
 
 			timeline.g = svg.append("g")
@@ -99,10 +52,7 @@
 			 * map function - maps from data value to display value
 			 * axis - sets up axis
 			 */ 
-<<<<<<< HEAD
-			 
-=======
->>>>>>> origin/master
+
 
     		//Actual graph
 			// setup x 
@@ -129,29 +79,13 @@
 				
 			    //color = d3.scale.category20();
 			    color = d3.scale.ordinal()
-<<<<<<< HEAD
+
 			    		.range(["#FFFF66","#CCFFFF  ","#FF9933"])
-=======
-			    		/*.range(["#00FF00", "#00FF00","#00FF00","#00FF00","#d3d3d3", "#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#FF0000","#FF0000","#FF0000"])
-			    		.domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);*/
 			    		.range(["#f0c609","#00184a","#e6002c"/*"#FFFF66","#CCFFFF","#FF9933"*/])
->>>>>>> origin/master
 			    		.domain(["Champion's League", "Hold League", "Relegation"]);
+
 		
-<<<<<<< HEAD
-=======
-			//console.log(cValue);
-			
-			// add the graph canvas to the body of the webpage
-			var svg = d3.select("body").append("svg")
-			    .attr("width", width + margin.left + margin.right)
-			    .attr("height", height + margin.top + margin.bottom)
-			  .append("g")
-			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-			    .call(d3.behavior.zoom()/*.x(xScale).y(yScale)*/.scaleExtent([1, 6]).on("zoom", zoom/*ed*/))
-			  .append("g")
-			    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
->>>>>>> origin/master
+
 
 //-------------------timeline x and y axis setup---------------------------
 			var x = d3.time.scale()
@@ -164,10 +98,10 @@
 
     		var xAxis2 = d3.svg.axis()
 			    .scale(x)
-			    .ticks(d3.time.year, 8)
+			    .ticks(d3.time.year, 12)
 			    .tickSize(10, 1)
 			    //.tickFormat(d3.time.format('%y'))
-			    .orient("bottom");
+			    .orient("top");
 
 			var brush = d3.svg.brush()
 				.x(x)
@@ -188,14 +122,11 @@
 			
 			// load data
 			d3.csv("Stats.csv.csv", function(error, data) {
-<<<<<<< HEAD
+
 
 			  spending = data;
 			  // change string (from CSV) into number format
-=======
-			    //console.log(data);
-			    // change string (from CSV) into number format
->>>>>>> origin/master
+
 			  data.forEach(function(d) {
 			    d["Net Spending"] = parseInt(d["Net Spending"].replace(/,/g, ''));
 			    d.POS = +d.POS;
@@ -261,10 +192,7 @@
 			               .style("opacity", 0);
 			      });
 				  
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 			  // draw legend
 			  var legend = svg.selectAll(".legend")
 			      .data(color.domain())
@@ -297,17 +225,15 @@
 					d3.selectAll('.dot').style("opacity",0.6);
 			      })
 				  .on("mouseout", function(d) {
-<<<<<<< HEAD
+
 					  clSelected = false;
 					  holdSelected = false;
 					  relegatedSelected = false;
 
-					  d3.selectAll('.dot').style("opacity",1);
-=======
 					  svg.selectAll(".dot").transition()
 					      .duration(100)
 					      .style("opacity", 1);
->>>>>>> origin/master
+
 			      })
 			      .style("fill", color);
 					
@@ -359,7 +285,7 @@
 			});	
 		
 
-<<<<<<< HEAD
+
 		function brushedend() {
 		  var extent0 = brush.extent(),extent1;
 
@@ -413,13 +339,13 @@
 		  // comments.text(sel.comments);
 		}
 						
-=======
+
 			function zoom() {
 				svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 				/*svg.select(".xScale.axis").call(xAxis);
 				svg.select(".yScale.axis").call(yAxis);*/
 			}
->>>>>>> origin/master
+
 		</script>
 
 		<p class="questions">Does spending more money mean a club wins more Championships? 

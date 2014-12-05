@@ -4,6 +4,7 @@ html {
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
+	opacity: 25%;
 }
 
 body {
@@ -40,4 +41,10 @@ body {
 	font-size: 20px; 
 	color: #484848;
 	text-align: center;
+}
+
+.brush .extent {
+	stroke: none;
+	fill-opacity: .2;
+	shape-rendering: crispEdges; 
 }
