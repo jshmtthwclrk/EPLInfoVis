@@ -9,13 +9,13 @@
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	</head>
 	<style>
-		html { 
+/*		html { 
 		  background: url(football.png) no-repeat center center fixed; 
 		  -webkit-background-size: cover;
 		  -moz-background-size: cover;
 		  -o-background-size: cover;
 		  background-size: cover;
-		}
+		}*/
 		
 		body {
 		  text-align: center;
@@ -45,6 +45,12 @@
 		  font-size:1em;
 		  color:#484848;
 		}
+
+		.brush .extent {
+		  stroke: none;
+		  fill-opacity: .2;
+		  shape-rendering: crispEdges; 
+		}
 		
 		
 		</style>
@@ -67,6 +73,28 @@
     			width = 1300 - margin.left - margin.right,
     			height = 720 - margin.top - margin.bottom;
 			
+
+			var timeline = {
+				g: null,
+				height: 80,
+				width: width
+			};
+
+
+			// add the graph canvas to the body of the webpage
+			var svg = d3.select("body").append("svg")
+			    .attr("width", width + margin.left + margin.right)
+			    .attr("height", height + margin.top + margin.bottom)
+			    .attr("margin","auto")
+			  .append("g")
+			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+			timeline.g = svg.append("g")
+			    .attr("class", "timeline")
+			    .attr("width", timeline.width)
+			    .attr("transform", "translate(0," + (height - timeline.height) + ")");
+
 			/* 
 			 * value accessor - returns the value to encode for a given data object.
 			 * scale - maps value to a visual display encoding, such as a pixel position.
@@ -74,8 +102,8 @@
 			 * axis - sets up axis
 			 */ 
 			 
-			 
 
+    		//Actual graph
 			// setup x 
 			var xValue = function(d) { return d.Points;}, // data -> value
 			    xScale = d3.scale.linear().range([0, width]), // value -> display
@@ -102,40 +130,56 @@
 				
 			    //color = d3.scale.category20();
 			    color = d3.scale.ordinal()
-			    		/*.range(["#00FF00", "#00FF00","#00FF00","#00FF00","#d3d3d3", "#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#d3d3d3","#FF0000","#FF0000","#FF0000"])
-			    		.domain([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);*/
 			    		.range(["#FFFF66","#CCFFFF  ","#FF9933"])
 			    		.domain(["Champion's League", "Hold League", "Relegation"]);
-			
 		
-			//console.log(cValue);
-			
-			// add the graph canvas to the body of the webpage
-			var svg = d3.select("body").append("svg")
-			    .attr("width", width + margin.left + margin.right)
-			    .attr("height", height + margin.top + margin.bottom)
-			  .append("g")
-			    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+//-------------------timeline x and y axis setup---------------------------
+			var x = d3.time.scale()
+			 	.range([0,timeline.width])
+			 	.clamp(true);
+
+			var y = d3.scale.linear()
+    			.range([timeline.height, 0]);
+
+
+    		var xAxis2 = d3.svg.axis()
+			    .scale(x)
+			    .ticks(d3.time.year, 8)
+			    .tickSize(10, 1)
+			    //.tickFormat(d3.time.format('%y'))
+			    .orient("bottom");
+
+			var brush = d3.svg.brush()
+				.x(x)
+				.on("brush",update)
+				.on("brushend",brushedend);
+
+
+//-----------------------------------------------------------------------
 			// add the tooltip area to the webpage
 			var tooltip = d3.select("body").append("div")
 			    .attr("class", "tooltip")
 			    .style("opacity", 0);
 
+			var spending;
+			var slider;
+			var dots;
+			
 			// load data
 			d3.csv("Stats.csv.csv", function(error, data) {
-			//console.log(data);
+
+			  spending = data;
 			  // change string (from CSV) into number format
 			  data.forEach(function(d) {
-			    d.Calories = +d.Calories;
 			    d["Net Spending"] = parseInt(d["Net Spending"].replace(/,/g, ''));
 			    d.POS = +d.POS;
-			    //d["Table Standing"] = +d["Table Standing"];
+			    d["Season"] = (d["Season"].split("-",1));
 			  });
 
 			  // don't want dots overlapping axis, so add in buffer to data domain
-			  xScale.domain([d3.min(data, xValue ), d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
-			  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+			  xScale.domain([0, d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
+			  yScale.domain([d3.min(data, yValue)-1,170000000]);
 			  
 			
 			  // x-axis
@@ -165,7 +209,7 @@
 			      .text("Net Spending");
 
 			  // draw dots
-			  svg.selectAll(".dot")
+			  dots = svg.selectAll(".dot")
 			      .data(data)
 			    .enter().append("circle")
 			      .attr("class", "dot")
@@ -192,7 +236,7 @@
 			      });
 				  
 
-			  	   // draw legend
+			  // draw legend
 			  var legend = svg.selectAll(".legend")
 			      .data(color.domain())
 			    .enter().append("g")
@@ -215,11 +259,15 @@
 						if(d == "Relegation"){
 							relegatedSelected = true;
 						}
+
+					d3.selectAll('.dot').style("opacity",0.6);
 			      })
 				  .on("mouseout", function(d) {
 					  clSelected = false;
 					  holdSelected = false;
 					  relegatedSelected = false;
+
+					  d3.selectAll('.dot').style("opacity",1);
 			      })
 			      .style("fill", color);
 					
@@ -232,9 +280,97 @@
 				  .style("fill", "#484848 "  )
 			      .text(function(d) { return d;})
 				  
-			});	
+//--------------------- slider ------------------------------
+			  var domain = d3.extent(data, function(d) { return d["Season"]; });
+			  var offset = d3.time.year.offset;
+			  x.domain([offset(domain[0], 31), offset(domain[1], 41)]);
+			  y.domain([0, 50]);  
 
-			
+			  // Axis
+			  timeline.g.append("g")
+			      .attr("class", "x axis")
+			      .attr("transform", "translate(0," + timeline.height + ")")
+			      .call(xAxis2);
+
+			brush.extent([offset(data[0]["Season"], 31), data[21]["Season"]]);
+
+			  slider = timeline.g.append("g")
+			    .attr("class", "brush")
+			    .call(brush);
+
+			  slider.selectAll(".resize,.background")
+			    .remove();
+
+			  slider.selectAll("rect")
+			    .attr("height", timeline.height + 6)
+			    .attr("width", 50)
+			    .attr("y", -5);
+
+			  slider.append("text")
+			    .style("text-anchor", "middle")
+			    .attr("y", 10)
+			    .attr("x", x(data[0]["Season"]))
+			    .style("stroke", "none")
+			    .style("fill", "Black")
+			    .style("font-weight", "bold")
+			    .style("font-size", "15px")
+			    .text(data[0]["Season"]);
+
+			});	
+		
+
+		function brushedend() {
+		  var extent0 = brush.extent(),extent1;
+
+		  var d0 = d3.time.year.floor(extent0[0]);
+		  d0 = d3.time.year.offset(d0, 1);
+		  var d1 = d3.time.year.offset(d0, 1);
+		  extent1 = [d0, d1];
+
+		  d3.select(this).call(brush.extent(extent1));
+
+		  update();
+		}
+		
+
+		function update() {
+
+		  var index = (((brush.extent()[0]).getFullYear()) - 2001)*20;
+		  console.log(brush.extent()[0].getFullYear());
+		  console.log(index);
+
+		  var sel=" ";
+		  console.log(spending[index]);
+
+		  var i;
+
+//		  for (i = index; i < index+20; i++) 
+//		  { 
+		    sel = spending[index];
+		    dots.data(sel);
+		    dots.attr("visibility","visible");
+
+		    console.log(sel);
+		  //}
+
+		  console.log(brush.extent()[0].getFullYear());
+		 
+		  
+		  var tx = x(d3.time.year.offset(brush.extent()[0], 1))
+		  slider.select("text").text(brush.extent()[0].getFullYear()).attr("x", tx);
+
+		  
+
+		  //   arcs.select("text")
+		  //     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+		  //     .text(function(d) { return d.value; });
+
+		  // games.text(sel.games);
+		  // count.data([sel.gold, sel.silver, sel.bronze])
+		  //   .select("text")
+		  //   .text(function(d) { return d; });
+		  // comments.text(sel.comments);
+		}
 						
 		</script>
 	</body>
