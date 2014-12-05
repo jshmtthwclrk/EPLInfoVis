@@ -1,11 +1,4 @@
-html {
-	background: url(../football.png) no-repeat center center fixed;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;
-	opacity: 25%;
-}
+
 
 body {
 	text-align: center;
@@ -27,7 +20,7 @@ body {
 .tooltip {
 	position: absolute;
 	width: 200px;
-	height: 28px;
+	height: 60px;
 	pointer-events: none;
 	font-size:1em;
 	color:#484848;

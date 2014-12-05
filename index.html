@@ -10,18 +10,24 @@
 		<!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>-->
 	</head>
 
-	
 	<body>
-		<h2 class="titleText">What does it take to win the EPL?</h2>
+		<!--<h2 class="titleText">What does it take to win the EPL?</h2>-->
+		
+		<script src="/d3/d3.js"></script>
 		<script>
 			
 			var clSelected = false;
 			var holdSelected = false;
 			var relegatedSelected = false;
 			
-			var margin = {top: 150, right: 200, bottom: 30, left: 100},
-    			width = 1300 - margin.left - margin.right,
-    			height = 720 - margin.top - margin.bottom;
+			var margin = {top: 50, right: 200, bottom: 30, left: 100},
+    			width = 1000- margin.left - margin.right,
+    			height = 540 - margin.top - margin.bottom;
+
+    		/*var tooltip = {
+    			height: "50px",
+    			width: "50px"
+    		};*/
 			
 
 			var timeline = {
@@ -112,8 +118,10 @@
 //-----------------------------------------------------------------------
 			// add the tooltip area to the webpage
 			var tooltip = d3.select("body").append("div")
+				.attr("width", 50)
+				.attr("height", 50)
 			    .attr("class", "tooltip")
-			    //.style("background-color", #fff)
+			    .style("background-color", "#FFFFFF")
 			    .style("opacity", 0);
 
 			var spending;
@@ -245,7 +253,7 @@
 			      .style("text-anchor", "end")
 				  .style("fill", "#484848 "  )
 			      .text(function(d) { return d;})
-				  
+
 //--------------------- slider ------------------------------
 			  var domain = d3.extent(data, function(d) { return d["Season"]; });
 			  var offset = d3.time.year.offset;
@@ -283,6 +291,9 @@
 			    .text(data[0]["Season"]);
 
 			});	
+
+			//d3.slider().axis(true).min(2000).max(2100).step(5);
+
 		
 
 
@@ -348,9 +359,6 @@
 
 		</script>
 
-		<p class="questions">Does spending more money mean a club wins more Championships? 
-		</br>How many points does a club need on average to make it into the Champions League? 
-		</br>How much money does it take to stay a top-flight club?</p>
 
 	</body>
 </html>
