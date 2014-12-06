@@ -20,7 +20,7 @@ body {
 .tooltip {
 	position: absolute;
 	width: 200px;
-	height: 60px;
+	height: 80px;
 	pointer-events: none;
 	font-size:1em;
 	color:#484848;

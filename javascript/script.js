@@ -52,8 +52,22 @@ yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 var rValue = function(d) { return d["Gross Spending"];},
 rMap = function(d) { 
-if(rValue(d) == 0) return 1;
-else return rValue(d)/2000000;
+if(rValue(d) == 0) 
+	return 5;
+else
+{
+	var size = rValue(d)/2000000;
+	if(size <= 5)
+		return 5;
+	else if(size >=60)
+		return 60;
+	else 
+		return size;
+}	
+	
+	
+	
+
 };
 
 // setup fill color
@@ -79,12 +93,12 @@ var y = d3.scale.linear()
 .range([timeline.height, 0]);
 
 
-var xAxis2 = d3.svg.axis()
-.scale(x)
-.ticks(d3.time.year, 12)
-.tickSize(10, 1)
-//.tickFormat(d3.time.format('%y'))
-.orient("top");
+// var xAxis2 = d3.svg.axis()
+// .scale(x)
+// // .ticks(d3.time.year, 12)
+// // .tickSize(10, 1)
+// //.tickFormat(d3.time.format('%y'))
+// .orient("top");
 
 var brush = d3.svg.brush()
 .x(x)
@@ -95,9 +109,12 @@ var brush = d3.svg.brush()
 //-----------------------------------------------------------------------
 // add the tooltip area to the webpage
 var tooltip = d3.select("body").append("div")
-.attr("class", "tooltip")
-//.style("background-color", #fff)
-.style("opacity", 0);
+	// .attr("width", 70)
+	// .attr("height", 100)
+	.attr("class", "tooltip")
+	.style("background-color", "#FFFFFF")
+	.style("opacity",0);
+
 
 var spending;
 var slider;
@@ -118,7 +135,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 
 	// don't want dots overlapping axis, so add in buffer to data domain
 	xScale.domain([0, d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
-	yScale.domain([d3.min(data, yValue)-1,170000000]);
+	yScale.domain([-70000000,170000000]);
 
 
 	// x-axis
@@ -167,19 +184,19 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	.on("mouseover", function(d) {
 		if(d == "Champion's League"){
 			d3.selectAll('.dot').style("opacity", function(d1){
-				if (d1['Table Standing'] !== d){return 0.6;} 
+				if (d1['Table Standing'] !== d){return 0.1;} 
 				else{return 1;}
 			});
 		}
 		if(d == "Relegation"){
 			d3.selectAll('.dot').style("opacity", function(d1){
-				if (d1['Table Standing'] !== d){return 0.6;} 
+				if (d1['Table Standing'] !== d){return 0.1;} 
 				else{return 1;}
 			});
 		} 
 		if(d == "Hold League"){
 			d3.selectAll('.dot').style("opacity", function(d1){
-				if (d1['Table Standing'] !== d){return 0.6;} 
+				if (d1['Table Standing'] !== d){return 0.1;} 
 				else{return 1;}
 			});
 		}
@@ -213,10 +230,10 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	y.domain([0, 50]);  
 
 	// Axis
-	timeline.g.append("g")
-	.attr("class", "x axis")
-	.attr("transform", "translate(0," + timeline.height + ")")
-	.call(xAxis2);
+	// timeline.g.append("g")
+	// .attr("class", "x axis")
+	// .attr("transform", "translate(0," + timeline.height + ")")
+	// .call(xAxis2);
 
 	brush.extent([offset(data[0]["Season"], 31), data[21]["Season"]]);
 
@@ -233,7 +250,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	.attr("y", -5);
 
 	slider.append("text")
-	.style("text-anchor", "middle")
+	.style("text-anchor", "right")
 	.attr("y", 10)
 	.attr("x", x(data[0]["Season"]))
 	.style("stroke", "none")
@@ -279,8 +296,9 @@ function drawDots(dataset){
 			tooltip.transition()
 			.duration(200)
 			.style("opacity", 0.9);
-			tooltip.html(d["Season"] + "<br/>" + xValue(d) 
-				+ " Points<br/>Gross $" + yValue(d) + " ")
+			tooltip.html(d["TEAM"] + "<br/>" + xValue(d) 
+				+ " Points<br/>Gross £ " + rValue(d) + " "
+				+ " <br/>Net £ " + yValue(d) + " ")
 			.style("left", (d3.event.pageX + 5) + "px")
 			.style("top", (d3.event.pageY - 28) + "px");
 		})
@@ -307,7 +325,8 @@ function update() {
 	drawDots(arr);
 
 	var tx = x(d3.time.year.offset(brush.extent()[0], 0))
-	slider.select("text").text(brush.extent()[0].getFullYear()).attr("x", tx);
+	var yr = brush.extent()[0].getFullYear();
+	slider.select("text").text(yr+"-"+(yr+1)).attr("x", tx);
 }
 
 
