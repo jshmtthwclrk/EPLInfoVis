@@ -1,3 +1,12 @@
+//CS 4464 
+//ENGLISH PREMIER LEAGUE TEAM 
+// Michael Denney, Yan Zhang, Joshua Clark, Samarth Paliwal
+
+// The TEAM EPL code for the visulaization was mostly written from scratch using demos and tutorials found online 
+// but we implemented our own functions and methods to achieve the final visualizaations
+// 
+
+
 var clSelected = false;
 var holdSelected = false;
 var relegatedSelected = false;
@@ -50,6 +59,8 @@ yScale = d3.scale.linear().range([height, 0]), // value -> display
 yMap = function(d) { return yScale(yValue(d));}, // data -> display
 yAxis = d3.svg.axis().scale(yScale).orient("left");
 
+
+//radius of circle coomputation
 var rValue = function(d) { return d["Gross Spending"];},
 rMap = function(d) { 
 if(rValue(d) == 0) 
@@ -65,8 +76,6 @@ else
 		return size;
 }	
 	
-	
-	
 
 };
 
@@ -74,9 +83,7 @@ else
 var cValue = function(d) { 
 return d["Table Standing"];},
 
-//color = d3.scale.category20();
 color = d3.scale.ordinal()
-
 .range(["#FFFF66","#CCFFFF  ","#FF9933"])
 .range(["#f0c609","#00184a","#e6002c"/*"#FFFF66","#CCFFFF","#FF9933"*/])
 .domain(["Champion's League", "Hold League", "Relegation"]);
@@ -84,7 +91,7 @@ color = d3.scale.ordinal()
 
 
 
-//-------------------timeline x and y axis setup---------------------------
+//-------------------timeline x, y axis  and initilization setup---------------------------
 var x = d3.time.scale()
 .range([0,timeline.width])
 .clamp(true);
@@ -92,13 +99,6 @@ var x = d3.time.scale()
 var y = d3.scale.linear()
 .range([timeline.height, 0]);
 
-
-// var xAxis2 = d3.svg.axis()
-// .scale(x)
-// // .ticks(d3.time.year, 12)
-// // .tickSize(10, 1)
-// //.tickFormat(d3.time.format('%y'))
-// .orient("top");
 
 var brush = d3.svg.brush()
 .x(x)
@@ -109,8 +109,6 @@ var brush = d3.svg.brush()
 //-----------------------------------------------------------------------
 // add the tooltip area to the webpage
 var tooltip = d3.select("body").append("div")
-	// .attr("width", 70)
-	// .attr("height", 100)
 	.attr("class", "tooltip")
 	.style("background-color", "#FFFFFF")
 	.style("opacity",0);
@@ -120,13 +118,14 @@ var spending;
 var slider;
 var dots;
 
-// load data
+// -------------------------load data-------------------------------------
+//new code 
+
 d3.csv("Stats.csv.csv", function(error, data) {
 
-
 	spending = data;
-	// change string (from CSV) into number format
 
+	// change string (from CSV) into number format
 	data.forEach(function(d) {
 		d["Net Spending"] = parseInt(d["Net Spending"].replace(/,/g, ''));
 		d.POS = +d.POS;
@@ -134,11 +133,13 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	});
 
 	// don't want dots overlapping axis, so add in buffer to data domain
-	xScale.domain([0, d3.max(data, xValue)]);//this apparently fixed the x-axis issue 
+	xScale.domain([0, d3.max(data, xValue)]);
 	yScale.domain([-70000000,170000000]);
 
 
-	// x-axis
+//----------------code used from examples on d3.js website to makes axis--------//
+
+	// x-axis of graph setup
 	svg.append("g")
 		.attr("class", "x axis")
 		.style("fill", "#484848 "  )
@@ -151,7 +152,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 		.style("text-anchor", "end")
 		.text("Points");
 
-	// y-axis
+	// y-axis of graph set up
 	svg.append("g")
 		.attr("class", "y axis")
 		.style("fill", "#484848 "  )
@@ -164,12 +165,11 @@ d3.csv("Stats.csv.csv", function(error, data) {
 		.style("text-anchor", "end")
 		.text("Net Spending");
 
-	// console.log(data);
-
+//calling the drawDotsw to draw the intial view of all the datapoints
 	drawDots(data);
 
 
-	// draw legend
+	// draw legend, seen from past projects and exmpales online 
 	var legend = svg.selectAll(".legend")
 	.data(color.domain())
 	.enter().append("g")
@@ -182,6 +182,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	.attr("width", 18)
 	.attr("height", 18)
 	.on("mouseover", function(d) {
+		//hovering over legend highlights the specific teams
 		if(d == "Champion's League"){
 			d3.selectAll('.dot').style("opacity", function(d1){
 				if (d1['Table Standing'] !== d){return 0.1;} 
@@ -201,6 +202,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 			});
 		}
 	})
+
 	.on("mouseout", function(d) {
 
 	clSelected = false;
@@ -214,6 +216,7 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	})
 	.style("fill", color);
 
+
 	// draw legend text
 	legend.append("text")
 	.attr("x", width + 160)
@@ -223,20 +226,18 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	.style("fill", "#484848 "  )
 	.text(function(d) { return d;})
 
-	//--------------------- slider ------------------------------
+//--------------------- slider drawing, 
+//------------repurposed from past project------------------------------
+
 	var domain = d3.extent(data, function(d) { return d["Season"]; });
 	var offset = d3.time.year.offset;
 	x.domain([offset(domain[0], 31), offset(domain[1], 41)]);
 	y.domain([0, 50]);  
 
-	// Axis
-	// timeline.g.append("g")
-	// .attr("class", "x axis")
-	// .attr("transform", "translate(0," + timeline.height + ")")
-	// .call(xAxis2);
-
+	//slider extent 
 	brush.extent([offset(data[0]["Season"], 31), data[21]["Season"]]);
 
+	//adding the slider to the canvas
 	slider = timeline.g.append("g")
 	.attr("class", "brush")
 	.call(brush);
@@ -249,6 +250,8 @@ d3.csv("Stats.csv.csv", function(error, data) {
 	.attr("width", 50)
 	.attr("y", -5);
 
+
+	//adding the text field over the slider to idicate season
 	slider.append("text")
 	.style("text-anchor", "right")
 	.attr("y", 10)
@@ -261,6 +264,9 @@ d3.csv("Stats.csv.csv", function(error, data) {
 
 });	
 
+
+// function to figure out where the slider snaps so it only attains years from 2001-2011 and not places in between
+// code used from past project
 
 function brushedend() {
 	var extent0 = brush.extent(),extent1;
@@ -275,6 +281,10 @@ function brushedend() {
 	update();
 }
 
+
+//function to draw the teams and plot them on the specific location according to data
+// implemented from scratch
+
 function drawDots(dataset){
 	
 	// console.log(dataset);
@@ -283,14 +293,16 @@ function drawDots(dataset){
 	
 	dots.exit().remove();
 
+//adding the teams to the canvas, code following exmples from d3.js
 	dots.enter().append("circle")
 		.attr("class", "dot")
 		.attr("r", rMap)
-		//.attr("transform", function(d) { return "translate(" + d + ")"; })
 		.attr("cx", xMap)
 		.attr("cy", yMap)
 		.style("fill", function(d) {  return color(cValue(d));
 		}) 
+
+	//tooltips for DoD from each team
 		.on("mouseover", function(d) {
 			d3.select(this).style("opacity", 0.6);
 			tooltip.transition()
@@ -311,25 +323,33 @@ function drawDots(dataset){
 }
 
 
+
+//the update function to redraw the teams based on the season selected with the slider
+//new code 
+
 function update() {
 
 	var index = (((brush.extent()[0]).getFullYear()) - 2001)*20;
-	console.log(index + ' ' + (index + 20));
 	var sel = spending[index];
 
+	//forming the new dataet from the specified season
 	var  arr = [];
 	for (i = index; i < index+20; i++) 
 	{ 
 		arr.push(spending[i]);
 	}
+
+	//darwing teams with new data
 	drawDots(arr);
 
+  //adding the season years to the slider
 	var tx = x(d3.time.year.offset(brush.extent()[0], 0))
 	var yr = brush.extent()[0].getFullYear();
 	slider.select("text").text(yr+"-"+(yr+1)).attr("x", tx);
 }
 
 
+//zoom failed to work properly
 function zoom() {
 svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 /*svg.select(".xScale.axis").call(xAxis);
